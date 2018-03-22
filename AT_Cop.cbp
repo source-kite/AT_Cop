@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="AT_Cop" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/AT_Cop" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="AT_Cop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="AT_Cop.h" />
+		<Unit filename="AT_Cop_GY_BLE260.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="AT_Cop_GY_BLE260.h" />
+		<Unit filename="AT_Cop_UserApp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="AT_Cop_UserApp.h" />
+		<Unit filename="LoopQueue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LoopQueue.h" />
+		<Unit filename="TrieTree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="TrieTree.h" />
+		<Unit filename="in.txt" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="out.txt" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

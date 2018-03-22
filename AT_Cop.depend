@@ -1,0 +1,51 @@
+# depslib dependency file v1.0
+1521622997 source:e:\projects\codeblocks\at_cop\at_cop.c
+	"AT_Cop.h"
+	<stdio.h>
+	<string.h>
+	<stdarg.h>
+
+1521623014 e:\projects\codeblocks\at_cop\at_cop.h
+	"TrieTree.h"
+	"LoopQueue.h"
+
+1521681576 source:e:\projects\codeblocks\at_cop\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"AT_Cop_UserApp.h"
+	"TrieTree.h"
+
+1521546274 e:\projects\codeblocks\at_cop\at_cop_userapp.h
+	"AT_Cop.h"
+
+1521684055 source:e:\projects\codeblocks\at_cop\at_cop_userapp.c
+	"AT_Cop_UserApp.h"
+	"AT_Cop_GY_BLE260.h"
+	<stdio.h>
+	<string.h>
+
+1521516535 e:\projects\codeblocks\at_cop\trietree.h
+
+1521624889 source:e:\projects\codeblocks\at_cop\trietree.c
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	"TrieTree.h"
+
+1521513848 e:\projects\codeblocks\at_cop\loopqueue.h
+	<stdint.h>
+	<string.h>
+
+1521513838 source:e:\projects\codeblocks\at_cop\loopqueue.c
+	"LoopQueue.h"
+
+1521681932 source:e:\projects\codeblocks\at_cop\gy_ble260.c
+
+1521683961 source:e:\projects\codeblocks\at_cop\at_cop_gy_ble260.c
+	"AT_Cop_GY_BLE260.h"
+	<stdlib.h>
+
+1521683899 e:\projects\codeblocks\at_cop\at_cop_gy_ble260.h
+	"AT_Cop.h"
+
