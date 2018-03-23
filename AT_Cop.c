@@ -37,6 +37,52 @@
 
 
 /* Private function prototypes -----------------------------------------------*/
+static AT_Object* AT_Cop_DicQuery( AT_ProcessorHandle *h_at_processor, char *p_at_str )
+{
+  char ch;
+  uint32_t hash;
+  uint32_t str_length;
+  AT_Object *p_at_object;
+
+  str_length = strlen( p_at_str );
+
+  do
+  {
+    ch = p_at_str[ str_length ];
+    p_at_str[ str_length ] = '\0';
+
+    hash = BKDR_Hash( (uint8_t*)p_at_str, str_length, AT_HASH_SEED ) % AT_HASH_MAX;
+    p_at_object = OWLL_Query( &h_at_processor->hash_base[ hash ], p_at_str, (OWLL_ValueCompare)strcmp );
+
+    p_at_str[ str_length ] = ch;
+
+
+  } while( ( NULL == p_at_object)
+          && (str_length --)
+  );
+
+  return p_at_object;
+}
+
+static AT_Object* AT_Cop_DicQueryStrict( AT_ProcessorHandle *h_at_processor, char *p_at_str )
+{
+  uint32_t hash;
+
+  hash = BKDR_Hash( (uint8_t*)p_at_str, strlen( p_at_str ), AT_HASH_SEED ) % AT_HASH_MAX;
+
+  return OWLL_Query( &h_at_processor->hash_base[ hash ], p_at_str, (OWLL_ValueCompare)strcmp );
+}
+
+
+static AT_Object* AT_Cop_DicInsert( AT_ProcessorHandle *h_at_processor, char *p_at_str, AT_Object* p_value )
+{
+  uint32_t hash;
+
+  hash = BKDR_Hash( (uint8_t*)p_at_str, strlen( p_at_str ), AT_HASH_SEED ) % AT_HASH_MAX;
+
+  return OWLL_Insert( &h_at_processor->hash_base[ hash ], p_at_str, p_value, (OWLL_ValueCompare)strcmp );
+}
+
 /**
   ******************************************************************************
   * @Func: AT_Cop_BuildDic
@@ -60,11 +106,12 @@ static AT_ProcessorHandle* AT_Cop_BuildDic( AT_ProcessorHandle *h_at_processor, 
   {
     h_at_processor->at_object_list = at_object_list;
     h_at_processor->at_object_list_length = list_length;
-    TrieTree_ResetNode( &h_at_processor->trie_root );
+
+    memset( &h_at_processor->hash_base, 0, sizeof( h_at_processor->hash_base ) );
 
     for( int i = 0; i < h_at_processor->at_object_list_length; i ++ )
     {
-      TrieTree_Insert( &h_at_processor->trie_root, h_at_processor->at_object_list[ i ].p_at_str, (void*)&h_at_processor->at_object_list[ i ] );
+      AT_Cop_DicInsert( h_at_processor, h_at_processor->at_object_list[ i ].p_at_str, (void*)&h_at_processor->at_object_list[ i ] );
     }
     return h_at_processor;
   }
@@ -151,7 +198,7 @@ static AT_Object* AT_Cop_Parser( AT_ProcessorHandle *h_at_processor, char *p_at_
 {
   AT_Object *p_at_object;
 
-  p_at_object = TrieTree_Query( &h_at_processor->trie_root, p_at_str );
+  p_at_object = AT_Cop_DicQuery( h_at_processor, p_at_str );
 
   if( NULL != p_at_object )
   {
@@ -224,7 +271,8 @@ AT_Object* AT_Cop_UpdateExecutor( AT_ProcessorHandle *h_at_processor, char *p_at
 {
   AT_Object *p_at_object;
 
-  p_at_object = TrieTree_Query( &h_at_processor->trie_root, p_at_str );
+  p_at_object = AT_Cop_DicQueryStrict( h_at_processor, p_at_str );
+
   if( NULL == p_at_object )
   {
     return NULL;

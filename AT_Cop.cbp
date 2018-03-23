@@ -31,14 +31,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="AT_Cop_UserApp.h" />
+		<Unit filename="BKDR_Hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="BKDR_Hash.h" />
 		<Unit filename="LoopQueue.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LoopQueue.h" />
-		<Unit filename="TrieTree.c">
+		<Unit filename="OWLL.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="TrieTree.h" />
+		<Unit filename="OWLL.h" />
 		<Unit filename="in.txt" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

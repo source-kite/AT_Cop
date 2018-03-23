@@ -16,12 +16,14 @@
 #define _AT_COP_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "TrieTree.h"
 #include "LoopQueue.h"
-
+#include "OWLL.h"
+#include "BKDR_Hash.h"
 
 /* Exported macro ------------------------------------------------------------*/
 #define AT_STR_SIZE     (64)
+#define AT_HASH_MAX     (128)
+#define AT_HASH_SEED    (131)
 
 /* Exported types ------------------------------------------------------------*/
 
@@ -38,7 +40,7 @@ struct AT_Object_Typedef
 
 struct AT_ProcessorHandle_Typedef
 {
-  TrieTree_Node trie_root;
+  OWLL_Node hash_base[ AT_HASH_MAX ];
 
   AT_Object *at_object_list;
   int at_object_list_length;
