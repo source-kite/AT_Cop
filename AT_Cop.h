@@ -34,7 +34,7 @@ typedef void  (*AT_Cop_Executor)( AT_ProcessorHandle *, ... );
 struct AT_Object_Typedef
 {
   char *p_at_str;
-  void (*p_parser)  ( AT_ProcessorHandle *h_at_processor, char *p_at_str, AT_Cop_Executor p_executor );
+  int  (*p_parser)  ( AT_ProcessorHandle *h_at_processor, char *p_at_str, AT_Cop_Executor p_executor );
   AT_Cop_Executor p_executor;
 };
 
@@ -52,6 +52,7 @@ struct AT_ProcessorHandle_Typedef
   int (*p_tx_sender)( uint8_t*, uint32_t );
 
   void (*p_exception_handler)( char * );
+  void (*p_success_handler)( char * );
 };
 
 /* Exported constants prototypes ---------------------------------------------*/
@@ -114,7 +115,6 @@ AT_Object* AT_Cop_UpdateExecutor( AT_ProcessorHandle *h_at_processor, char *p_at
   *        p_rx_buffer: The buffer of rx data
   *        rx_buffer_size: The size of rx buffer
   *        p_tx_sender: data transmiter
-  *        p_exception_handler: exception handler
   * @Ret:  Not NULL means this operation is successful
   ******************************************************************************
   */
@@ -123,8 +123,7 @@ AT_ProcessorHandle* AT_Cop_Init(  AT_ProcessorHandle *h_at_processor,
                                   int list_length,
                                   char *p_rx_buffer,
                                   int rx_buffer_size,
-                                  int (*p_tx_sender)( uint8_t *, uint32_t ),
-                                  void (*p_exception_handler)( char * ) );
+                                  int (*p_tx_sender)( uint8_t *, uint32_t ) );
 #endif /* _AT_COP_H */
 
 /************************ (C) COPYRIGHT NONE *****END OF FILE****/

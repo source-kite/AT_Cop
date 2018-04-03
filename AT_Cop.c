@@ -126,7 +126,7 @@ static AT_ProcessorHandle* AT_Cop_BuildDic( AT_ProcessorHandle *h_at_processor, 
   * @Ret:  Not NULL means this operation is successful.
   ******************************************************************************
   */
-static char* AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_str )
+static char*  AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_str )
 {
   char byte_data;
   int str_length;
@@ -134,31 +134,40 @@ static char* AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_st
 
   /* Recognition divide character and drop therm */
   str_length = 0;
-  while( 0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length )) )
+  while(  (AT_STR_SIZE >  str_length)
+          && (0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length ))) )
   {
     if( ('\r' != byte_data)
         && ('\n' != byte_data)
     )
     {
-      p_at_str[ str_length ] = '\0';
       LoopQueue_Drop( &h_at_processor->rx_buffer_queue, str_length );
       break;
     }
     else
     {
-      p_at_str[ str_length ] = byte_data;
       str_length ++;
     }
   }
 
-  if( 0 != loop_queue_ret )
+  if( AT_STR_SIZE >  str_length )
   {
+    if( 0 != loop_queue_ret )
+    {
+      return NULL;
+    }
+  }
+  else
+  {
+    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, AT_STR_SIZE );
     return NULL;
   }
 
   /* Recognition AT cmd character and save therm. */
   str_length = 0;
-  while( 0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length )) )
+  while(  (AT_STR_SIZE > str_length)
+          && (0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length )))
+  )
   {
     if( ('\r' == byte_data)
         || ('\n' == byte_data)
@@ -174,14 +183,22 @@ static char* AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_st
       str_length ++;
     }
   }
-
-  if( 0 != loop_queue_ret )
+  
+  if( AT_STR_SIZE > str_length )
   {
-    return NULL;
+    if( 0 != loop_queue_ret )
+    {
+      return NULL;
+    }
+    else
+    {
+      return p_at_str;
+    }
   }
   else
   {
-    return p_at_str;
+    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, AT_STR_SIZE );
+    return NULL;
   }
 }
 
@@ -204,7 +221,20 @@ static AT_Object* AT_Cop_Parser( AT_ProcessorHandle *h_at_processor, char *p_at_
   {
     if( NULL != p_at_object->p_parser )
     {
-      p_at_object->p_parser( h_at_processor, p_at_str, p_at_object->p_executor );
+      if( 1 == p_at_object->p_parser( h_at_processor, p_at_str, p_at_object->p_executor ) )
+      {
+        if( NULL != h_at_processor->p_success_handler )
+        {
+          h_at_processor->p_success_handler( p_at_str );
+        }
+      }
+      else
+      {
+        if( NULL != h_at_processor->p_exception_handler )
+        {
+          h_at_processor->p_exception_handler( p_at_str );
+        }
+      }
     }
   }
   else
@@ -228,7 +258,6 @@ static AT_Object* AT_Cop_Parser( AT_ProcessorHandle *h_at_processor, char *p_at_
   *        p_rx_buffer: The buffer of rx data
   *        rx_buffer_size: The size of rx buffer
   *        p_tx_sender: data transmiter
-  *        p_exception_handler: exception handler
   * @Ret:  Not NULL means this operation is successful
   ******************************************************************************
   */
@@ -237,8 +266,7 @@ AT_ProcessorHandle* AT_Cop_Init(  AT_ProcessorHandle *h_at_processor,
                                   int list_length,
                                   char *p_rx_buffer,
                                   int rx_buffer_size,
-                                  int (*p_tx_sender)( uint8_t *, uint32_t ),
-                                  void (*p_exception_handler)( char * ) )
+                                  int (*p_tx_sender)( uint8_t *, uint32_t ) )
 {
   if( NULL != AT_Cop_BuildDic( h_at_processor, at_object_list, list_length ) )
   {
@@ -247,7 +275,8 @@ AT_ProcessorHandle* AT_Cop_Init(  AT_ProcessorHandle *h_at_processor,
       if( NULL != p_tx_sender )
       {
         h_at_processor->p_tx_sender = p_tx_sender;
-        h_at_processor->p_exception_handler = p_exception_handler;
+        h_at_processor->p_success_handler = NULL;
+        h_at_processor->p_exception_handler = NULL;
 
         return h_at_processor;
       }
@@ -332,7 +361,6 @@ int AT_Cop_Tx( AT_ProcessorHandle *h_at_processor, const char *format, ... )
   int length;
 
   if( (NULL != h_at_processor)
-      && (NULL != h_at_processor->at_tx_str )
       && (NULL != h_at_processor->p_tx_sender)
   )
   {
