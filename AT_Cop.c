@@ -134,11 +134,10 @@ static char*  AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_s
 
   /* Recognition divide character and drop therm */
   str_length = 0;
-  while(  (AT_STR_SIZE >  str_length)
-          && (0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length ))) )
+  while( 0 == (loop_queue_ret = LoopQueue_Peek( &h_at_processor->rx_buffer_queue, (uint8_t*)&byte_data, str_length )) )
   {
-    if( ('\r' != byte_data)
-        && ('\n' != byte_data)
+    if( ('A' == byte_data)
+        || ('+' == byte_data)
     )
     {
       LoopQueue_Drop( &h_at_processor->rx_buffer_queue, str_length );
@@ -159,7 +158,7 @@ static char*  AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_s
   }
   else
   {
-    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, AT_STR_SIZE );
+    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, str_length );
     return NULL;
   }
 
@@ -197,7 +196,7 @@ static char*  AT_Cop_PreParser( AT_ProcessorHandle *h_at_processor, char* p_at_s
   }
   else
   {
-    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, AT_STR_SIZE );
+    LoopQueue_Drop( &h_at_processor->rx_buffer_queue, str_length );
     return NULL;
   }
 }
